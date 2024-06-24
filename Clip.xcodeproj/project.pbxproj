@@ -11,6 +11,10 @@
 		F8030A252C29B61600CAA47F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8030A242C29B61600CAA47F /* ContentView.swift */; };
 		F8030A272C29B61700CAA47F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8030A262C29B61700CAA47F /* Assets.xcassets */; };
 		F8030A2A2C29B61700CAA47F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8030A292C29B61700CAA47F /* Preview Assets.xcassets */; };
+		F8030A332C29B8A500CAA47F /* Window.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8030A322C29B8A500CAA47F /* Window.swift */; };
+		F8030A352C29C05F00CAA47F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8030A342C29C05F00CAA47F /* AppDelegate.swift */; };
+		F8030A3A2C29DB8700CAA47F /* KeyboardShortcuts in Frameworks */ = {isa = PBXBuildFile; productRef = F8030A392C29DB8700CAA47F /* KeyboardShortcuts */; };
+		F8030A3D2C29E02B00CAA47F /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = F8030A3C2C29E02B00CAA47F /* HotKey */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +24,9 @@
 		F8030A262C29B61700CAA47F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F8030A292C29B61700CAA47F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F8030A2B2C29B61700CAA47F /* Clip.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Clip.entitlements; sourceTree = "<group>"; };
+		F8030A312C29B6D700CAA47F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F8030A322C29B8A500CAA47F /* Window.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Window.swift; sourceTree = "<group>"; };
+		F8030A342C29C05F00CAA47F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -27,6 +34,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8030A3D2C29E02B00CAA47F /* HotKey in Frameworks */,
+				F8030A3A2C29DB8700CAA47F /* KeyboardShortcuts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,6 +61,9 @@
 		F8030A212C29B61600CAA47F /* Clip */ = {
 			isa = PBXGroup;
 			children = (
+				F8030A342C29C05F00CAA47F /* AppDelegate.swift */,
+				F8030A322C29B8A500CAA47F /* Window.swift */,
+				F8030A312C29B6D700CAA47F /* Info.plist */,
 				F8030A222C29B61600CAA47F /* ClipApp.swift */,
 				F8030A242C29B61600CAA47F /* ContentView.swift */,
 				F8030A262C29B61700CAA47F /* Assets.xcassets */,
@@ -85,6 +97,10 @@
 			dependencies = (
 			);
 			name = Clip;
+			packageProductDependencies = (
+				F8030A392C29DB8700CAA47F /* KeyboardShortcuts */,
+				F8030A3C2C29E02B00CAA47F /* HotKey */,
+			);
 			productName = Clip;
 			productReference = F8030A1F2C29B61600CAA47F /* Clip.app */;
 			productType = "com.apple.product-type.application";
@@ -113,6 +129,10 @@
 				Base,
 			);
 			mainGroup = F8030A162C29B61600CAA47F;
+			packageReferences = (
+				F8030A382C29DB8700CAA47F /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
+				F8030A3B2C29E02B00CAA47F /* XCRemoteSwiftPackageReference "HotKey" */,
+			);
 			productRefGroup = F8030A202C29B61600CAA47F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -139,8 +159,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8030A352C29C05F00CAA47F /* AppDelegate.swift in Sources */,
 				F8030A252C29B61600CAA47F /* ContentView.swift in Sources */,
 				F8030A232C29B61600CAA47F /* ClipApp.swift in Sources */,
+				F8030A332C29B8A500CAA47F /* Window.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,6 +301,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Clip/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -306,6 +330,8 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Clip/Info.plist;
+				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -341,6 +367,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		F8030A382C29DB8700CAA47F /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.1;
+			};
+		};
+		F8030A3B2C29E02B00CAA47F /* XCRemoteSwiftPackageReference "HotKey" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/soffes/HotKey";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F8030A392C29DB8700CAA47F /* KeyboardShortcuts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8030A382C29DB8700CAA47F /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */;
+			productName = KeyboardShortcuts;
+		};
+		F8030A3C2C29E02B00CAA47F /* HotKey */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F8030A3B2C29E02B00CAA47F /* XCRemoteSwiftPackageReference "HotKey" */;
+			productName = HotKey;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F8030A172C29B61600CAA47F /* Project object */;
 }

@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct ClipApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+
+    init() {
+        print("ClipApp initialized")
+    }
+
     var body: some Scene {
-        WindowGroup {
+        MenuBarExtra("ClipApp", systemImage: "hammer") {
             ContentView()
-        }
+        }.menuBarExtraStyle(.window)
     }
 }
