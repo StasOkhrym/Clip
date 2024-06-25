@@ -2,6 +2,8 @@ import Cocoa
 import HotKey
 import SwiftUI
 
+
+
 class AppDelegate: NSObject, NSApplicationDelegate {
     static private(set) var instance: AppDelegate! = nil
 
@@ -12,6 +14,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         AppDelegate.instance = self
         windowManager = MyWindowManager(clipboardManager: ClipboardManager())
         setupHotKey()
+    }
+    
+    func applicationWillTerminate(_ notification: Notification) {
+        UserDefaults.standard.removeObject(forKey: storageKey)
+        UserDefaults.standard.removeObject(forKey: currentIndexKey)
     }
 
     private func setupHotKey() {

@@ -11,7 +11,6 @@ struct ClipboardWindowView: View {
     @StateObject private var clipboardManager = ClipboardManager()
     @State private var currentIndex = 0
     
-    private let currentIndexKey = "CurrentIndexKey"
     
     var body: some View {
         VStack {
@@ -24,61 +23,57 @@ struct ClipboardWindowView: View {
             }
         }
         .onAppear {
+            print("appeared")
             loadCurrentIndex()
             setupKeyHandlers()
+            clipboardManager.checkClipboard()
         }
         .onDisappear {
             saveCurrentIndex()
-            copyCurrentItemToClipboard()
-        }
-    }
-    
-    private func copyCurrentItemToClipboard() {
-        guard !clipboardManager.clipboardItems.isEmpty else { return }
-        
-        let currentItem = clipboardManager.clipboardItems[currentIndex]
-        let pasteboard = NSPasteboard.general
-        pasteboard.clearContents()
-        
-        switch currentItem {
-        case .text(let text):
-            pasteboard.setString(text, forType: .string)
-        case .image(let imageData):
-            if let nsImage = NSImage(data: imageData) {
-                pasteboard.writeObjects([nsImage])
-            }
-        case .unknown:
-            // Handle unknown type if needed
-            break
+            clipboardManager.copyItemToClipboard(index: currentIndex)
+            
+            
         }
     }
     
     private var currentItemView: some View {
-        let currentItem = clipboardManager.clipboardItems[currentIndex]
-        return Group {
-            switch currentItem {
-            case .text(let text):
-                Text(text)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .padding(.horizontal)
-                    .padding(.top)
-            case .image(let imageData):
-                if let nsImage = NSImage(data: imageData) {
-                    Image(nsImage: nsImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    Text("Invalid image data")
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        Group {
+            if currentIndex < clipboardManager.clipboardItems.count {
+                let currentItem = clipboardManager.clipboardItems[currentIndex]
+                VStack {
+                    switch currentItem.availableType(from: [.string, .tiff]) {
+                    case .string:
+                        if let text = currentItem.string(forType: .string) {
+                            Text(text)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                .padding(.horizontal)
+                                .padding(.top)
+                        } else {
+                            Text("Invalid text data")
+                        }
+                    case .tiff:
+                        if let imageData = currentItem.data(forType: .tiff),
+                           let nsImage = NSImage(data: imageData) {
+                            Image(nsImage: nsImage)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        } else {
+                            Text("Invalid image data")
+                        }
+                    default:
+                        Text("Unknown item")
+                    }
                 }
-            case .unknown:
-                Text("Unknown item")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .padding(.bottom, 10)
+            } else {
+                Text("Invalid index")
             }
         }
-        .padding(.bottom, 10)
     }
+
+
+
     
     private var statusView: some View {
         HStack {
@@ -89,12 +84,30 @@ struct ClipboardWindowView: View {
     
     private func setupKeyHandlers() {
         NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            if event.keyCode == 123 || event.keyCode == 124 {
-                handleKeyEvent(event)
+            guard let window = NSApp.mainWindow?.windowController?.window,
+                  NSApplication.shared.keyWindow === window else {
+                return event
             }
-            return event
+
+            guard !event.isARepeat else {
+                return nil // Ignore repeated key events
+            }
+
+            switch event.keyCode {
+            case 123: // Left arrow key
+                currentIndex = max(0, currentIndex - 1)
+                print("Left arrow key pressed")
+                return nil // Consume the event
+            case 124: // Right arrow key
+                currentIndex = min(clipboardManager.clipboardItems.count - 1, currentIndex + 1)
+                print("Right arrow key pressed")
+                return nil // Consume the event
+            default:
+                return event
+            }
         }
     }
+
     
     private func handleKeyEvent(_ event: NSEvent) {
         switch event.keyCode {

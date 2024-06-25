@@ -6,72 +6,17 @@
 //
 import SwiftUI
 import Combine
-
-enum ClipboardItem: Identifiable, Codable {
-    case text(String)
-    case image(Data)
-    case unknown
-    
-    var id: UUID {
-        return UUID()
-    }
-    
-    enum CodingKeys: String, CodingKey {
-        case type
-        case text
-        case image
-    }
-    
-    enum ItemType: String, Codable {
-        case text
-        case image
-        case unknown
-    }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let type = try container.decode(ItemType.self, forKey: .type)
-        switch type {
-        case .text:
-            let text = try container.decode(String.self, forKey: .text)
-            self = .text(text)
-        case .image:
-            let imageData = try container.decode(Data.self, forKey: .image)
-            self = .image(imageData)
-        case .unknown:
-            self = .unknown
-        }
-    }
-    
-    func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        switch self {
-        case .text(let text):
-            try container.encode(ItemType.text, forKey: .type)
-            try container.encode(text, forKey: .text)
-        case .image(let imageData):
-            try container.encode(ItemType.image, forKey: .type)
-            try container.encode(imageData, forKey: .image)
-        case .unknown:
-            try container.encode(ItemType.unknown, forKey: .type)
-        }
-    }
-}
+import AppKit
 
 class ClipboardManager: ObservableObject {
-    @Published var clipboardItems: [ClipboardItem] = []
+    @Published var clipboardItems: [NSPasteboardItem] = []
     
     private var timer: Timer?
-    private var previousClipboardContent: Data?
-    private let storageURL: URL
+    private let storageKey = "ClipboardItems"
+    private let maxItemsCount = 20
     
     init() {
-        let fileManager = FileManager.default
-        let urls = fileManager.urls(for: .documentDirectory, in: .userDomainMask)
-        storageURL = urls[0].appendingPathComponent("clipboard_items.json")
-        
         loadClipboardItems()
-        
         startMonitoring()
     }
     
@@ -81,31 +26,48 @@ class ClipboardManager: ObservableObject {
         }
     }
     
-    private func checkClipboard() {
+    func checkClipboard() {
         let pasteboard = NSPasteboard.general
+        guard let items = pasteboard.pasteboardItems else {
+            return
+        }
         
-        if let string = pasteboard.string(forType: .string) {
-            let data = Data(string.utf8)
-            if data != previousClipboardContent {
-                previousClipboardContent = data
-                addClipboardItem(.text(string))
+        for item in items {
+            // Check for text content
+            if let string = item.string(forType: .string) {
+                if !isDuplicateClipboardItem(item) {
+                    addClipboardItem(item)
+                }
             }
-        } else if let imageData = pasteboard.data(forType: .tiff) {
-            if imageData != previousClipboardContent {
-                previousClipboardContent = imageData
-                addClipboardItem(.image(imageData))
-            }
-        } else {
-            let data = Data("unknown".utf8)
-            if data != previousClipboardContent {
-                previousClipboardContent = data
-                addClipboardItem(.unknown)
+            
+            // Check for image content
+            if let imageData = item.data(forType: .tiff) {
+                if !isDuplicateClipboardItem(item) {
+                    addClipboardItem(item)
+                }
             }
         }
     }
     
-    private func addClipboardItem(_ item: ClipboardItem) {
-        if clipboardItems.count >= 20 {
+    private func isDuplicateClipboardItem(_ newItem: NSPasteboardItem) -> Bool {
+        guard let lastItem = clipboardItems.last else {
+            return false
+        }
+        
+        // Compare pasteboard items based on types you are interested in
+        if let lastString = lastItem.string(forType: .string), let newString = newItem.string(forType: .string) {
+            return lastString == newString
+        }
+        
+        if let lastData = lastItem.data(forType: .tiff), let newData = newItem.data(forType: .tiff) {
+            return lastData == newData
+        }
+        
+        return false
+    }
+    
+    private func addClipboardItem(_ item: NSPasteboardItem) {
+        if clipboardItems.count >= maxItemsCount {
             clipboardItems.removeFirst()
         }
         clipboardItems.append(item)
@@ -114,23 +76,39 @@ class ClipboardManager: ObservableObject {
     
     private func saveClipboardItems() {
         do {
-            let data = try JSONEncoder().encode(clipboardItems)
-            try data.write(to: storageURL)
+            let data = try NSKeyedArchiver.archivedData(withRootObject: clipboardItems, requiringSecureCoding: false)
+            UserDefaults.standard.set(data, forKey: storageKey)
         } catch {
             print("Failed to save clipboard items: \(error)")
         }
     }
+
     
     private func loadClipboardItems() {
-        do {
-            let data = try Data(contentsOf: storageURL)
-            clipboardItems = try JSONDecoder().decode([ClipboardItem].self, from: data)
-        } catch {
-            print("Failed to load clipboard items: \(error)")
+        if let data = UserDefaults.standard.data(forKey: storageKey) {
+            do {
+                if let loadedItems = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(data) as? [NSPasteboardItem] {
+                    clipboardItems = loadedItems
+                }
+            } catch {
+                print("Failed to load clipboard items: \(error)")
+            }
         }
+    }
+
+    
+    func copyItemToClipboard(index: Int) {
+        guard index >= 0 && index < clipboardItems.count else { return }
+        
+        let currentItem = clipboardItems[index]
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        
+        pasteboard.writeObjects([currentItem])
     }
     
     deinit {
+        UserDefaults.standard.removeObject(forKey: storageKey)
         timer?.invalidate()
     }
 }
