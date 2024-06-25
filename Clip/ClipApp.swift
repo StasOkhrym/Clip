@@ -10,14 +10,13 @@ import SwiftUI
 @main
 struct ClipApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
-
-    init() {
-        print("ClipApp initialized")
-    }
+    @StateObject private var clipboardManager = ClipboardManager()
 
     var body: some Scene {
         MenuBarExtra("ClipApp", systemImage: "hammer") {
             ContentView()
+            .environmentObject(clipboardManager)
+
         }.menuBarExtraStyle(.window)
     }
 }
