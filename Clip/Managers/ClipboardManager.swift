@@ -8,16 +8,18 @@ import SwiftUI
 import Combine
 import AppKit
 
+
+
+
 class ClipboardManager: ObservableObject {
     @Published var clipboardItems: [NSPasteboardItem] = []
 
     private var timer: Timer?
     private let pasteboard = NSPasteboard.general
-    private let maxItemsCount = 20
-    private let pasteboardName = "com.example.MyApp.ClipboardItems"
+    private var lastChangeCount: Int = 0
 
     init() {
-        loadClipboardItems()
+        lastChangeCount = pasteboard.changeCount
         startMonitoring()
     }
 
@@ -28,88 +30,64 @@ class ClipboardManager: ObservableObject {
     }
 
     func checkClipboard() {
-        guard let items = pasteboard.pasteboardItems else {
+        guard pasteboard.changeCount != lastChangeCount else {
             return
         }
-
-        for item in items {
-            if !isDuplicateClipboardItem(item) {
-                addClipboardItem(item)
-            }
-        }
-    }
-
-    private func isDuplicateClipboardItem(_ newItem: NSPasteboardItem) -> Bool {
-        guard let lastItem = clipboardItems.last else {
-            return false
-        }
-
-        return newItem.types == lastItem.types && newItem.data(forType: .string) == lastItem.data(forType: .string)
-    }
-
-    private func addClipboardItem(_ item: NSPasteboardItem) {
-        if clipboardItems.count >= maxItemsCount {
-            clipboardItems.removeFirst()
-        }
-        clipboardItems.append(item)
-        saveClipboardItems()
-    }
-
-    private func saveClipboardItems() {
-        var archivedItems: [Data] = []
-
-        for item in clipboardItems {
-            let data = try? NSKeyedArchiver.archivedData(withRootObject: item, requiringSecureCoding: false)
-            archivedItems.append(data ?? Data())
-        }
-
-        pasteboard.declareTypes([.string], owner: nil)
-        do {
-            pasteboard.setData(try NSKeyedArchiver.archivedData(withRootObject: archivedItems, requiringSecureCoding: false), forType: .tiff)
-        } catch {
-            print("g")
-        }
-        }
-
-    private func loadClipboardItems() {
-        guard let archivedItemsData = pasteboard.data(forType: .tiff) else {
-            return
-        }
-
-        do {
-            let archivedItems = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(archivedItemsData) as? [Data] ?? []
-            var items: [NSPasteboardItem] = []
-
-            for archivedData in archivedItems {
-                if let item = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(archivedData) as? NSPasteboardItem {
-                    items.append(item)
+        
+        lastChangeCount = pasteboard.changeCount
+        
+        DispatchQueue.main.async {
+            if let items = self.pasteboard.pasteboardItems {
+                for item in items {
+                    if !self.clipboardItems.contains(where: { $0.string(forType: .string) == item.string(forType: .string) }) {
+                        if self.clipboardItems.count >= 20 {
+                            self.clipboardItems.removeFirst()
+                        }
+                        self.clipboardItems.append(item) // Create a copy to avoid reuse issues
+                        self.objectWillChange.send()
+                        print(self.clipboardItems.count)
+                    }
                 }
             }
-
-            clipboardItems = items
-        } catch {
-            print("Failed to load clipboard items: \(error)")
         }
     }
 
     func copyItemToClipboard(index: Int) {
-        guard index >= 0 && index < clipboardItems.count else { return }
+        guard index >= 0 && index < clipboardItems.count else {
+            return
+        }
 
-        let currentItem = clipboardItems[index]
-        pasteboard.clearContents()
+        let item = clipboardItems[index]
+        let newItem = NSPasteboardItem()
 
-        let newPasteboardItem = NSPasteboardItem()
-        currentItem.types.forEach { type in
-            if let data = currentItem.data(forType: type) {
-                newPasteboardItem.setData(data, forType: type)
+        // Copy data for each type in the item
+        item.types.forEach { type in
+            switch type {
+            case .string:
+                if let string = item.string(forType: .string) {
+                    newItem.setString(string, forType: .string)
+                }
+            case .tiff:
+                if let tiffData = item.data(forType: .tiff) {
+                    newItem.setData(tiffData, forType: .tiff)
+                }
+            case .fileURL:
+                if let fileURLString = item.string(forType: .fileURL),
+                   let fileURL = URL(string: fileURLString) {
+                    newItem.setString(fileURL.absoluteString, forType: .fileURL)
+                }
+            default:
+                break
             }
         }
 
-        pasteboard.writeObjects([newPasteboardItem])
+        pasteboard.clearContents()
+        pasteboard.writeObjects([newItem])
     }
 
+
     deinit {
-        pasteboard.clearContents()
         timer?.invalidate()
+        print("ClipboardManager deinitialized")
     }
 }

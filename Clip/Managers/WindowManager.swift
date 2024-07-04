@@ -39,7 +39,7 @@ class MyWindowManager: NSObject, ObservableObject, NSWindowDelegate {
                               defer: false)
             window?.center()
             window?.setFrameAutosaveName("MySpecificWindow")
-            window?.contentView = NSHostingView(rootView: ClipboardWindowView())
+            window?.contentView = NSHostingView(rootView: ClipboardWindowView().environmentObject(clipboardManager))
             window?.delegate = self
             window?.makeKeyAndOrderFront(nil)
         } else {
