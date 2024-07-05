@@ -13,7 +13,7 @@ struct ClipApp: App {
     @StateObject private var clipboardManager = ClipboardManager()
 
     var body: some Scene {
-        MenuBarExtra("ClipApp", systemImage: "hammer") {
+        MenuBarExtra("ClipApp", systemImage: "paperclip") {
             ContentView()
             .environmentObject(clipboardManager)
 

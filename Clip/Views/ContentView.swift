@@ -8,7 +8,8 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Text("Clip is minimalistic clipoard manager")
-                .padding(.top);
+                .padding(.top)
+                .font(.title3)
             VStack{
                 Text("To open the window, press ⌘ + ⇧ + V")
                 HStack{
@@ -16,7 +17,7 @@ struct ContentView: View {
                     Image(systemName: "arrow.left")
                     Image(systemName: "arrow.right")
                 }
-            }
+            }.padding(.bottom, 5)
             HStack{
                 Button(
                     action: {
