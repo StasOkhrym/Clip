@@ -18,35 +18,34 @@ class NSWindowModified: NSWindow {
 }
 
 class MyWindowManager: NSObject, ObservableObject, NSWindowDelegate {
-    @Published private var window: NSWindow?
+    @Published private var window: NSWindowModified?
     private var clipboardManager: ClipboardManager
-    
+
     init(clipboardManager: ClipboardManager) {
         self.clipboardManager = clipboardManager
         super.init()
     }
-    
-    deinit {
-    }
-    
+
     func openWindow() {
         if window == nil {
-            let windowSize = NSSize(width: 800, height: 800)
-            
+            let windowSize = NSSize(width: 800, height: 600)
+
             window = NSWindowModified(contentRect: NSRect(origin: .zero, size: windowSize),
-                              styleMask: [], // Nothing will interupt
-                              backing: .buffered,
-                              defer: false)
+                                     styleMask: [],
+                                     backing: .buffered,
+                                     defer: false)
+            window?.backgroundColor = NSColor(red: 0, green: 0, blue: 0, alpha: 0.7)
             window?.center()
-            window?.setFrameAutosaveName("MySpecificWindow")
+
             window?.contentView = NSHostingView(rootView: ClipboardWindowView().environmentObject(clipboardManager))
             window?.delegate = self
             window?.makeKeyAndOrderFront(nil)
         } else {
+            window?.center()
             window?.makeKeyAndOrderFront(nil)
         }
     }
-        
+
     func closeWindow() {
         guard let window = window else {
             return
@@ -54,8 +53,9 @@ class MyWindowManager: NSObject, ObservableObject, NSWindowDelegate {
         window.orderOut(nil)
         self.window = nil
     }
-    
+
     func windowWillClose(_ notification: Notification) {
         window = nil
     }
+
 }

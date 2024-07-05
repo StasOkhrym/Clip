@@ -34,7 +34,6 @@ class ClipboardManager: ObservableObject {
             return
         }
         
-        lastChangeCount = pasteboard.changeCount
         
         DispatchQueue.main.async {
             if let items = self.pasteboard.pasteboardItems {
@@ -43,9 +42,12 @@ class ClipboardManager: ObservableObject {
                         if self.clipboardItems.count >= 20 {
                             self.clipboardItems.removeFirst()
                         }
-                        self.clipboardItems.append(item) // Create a copy to avoid reuse issues
+                        let newItem = item
+                        self.clipboardItems.append(newItem) // Create a copy to avoid reuse issues
                         self.objectWillChange.send()
                         print(self.clipboardItems.count)
+                        self.lastChangeCount = self.pasteboard.changeCount
+
                     }
                 }
             }
@@ -77,13 +79,21 @@ class ClipboardManager: ObservableObject {
                     newItem.setString(fileURL.absoluteString, forType: .fileURL)
                 }
             default:
-                break
+                if let data = item.data(forType: type) {
+                    newItem.setData(data, forType: type)
+                } else if let string = item.string(forType: type) {
+                    newItem.setString(string, forType: type)
+                } else {
+                    print("Unhandled type: \(type.rawValue)")
+                }
             }
         }
 
         pasteboard.clearContents()
         pasteboard.writeObjects([newItem])
     }
+
+
 
 
     deinit {

@@ -5,11 +5,13 @@
 //  Created by Станіслав Охрим on 24.06.2024.
 //
 import SwiftUI
-import AppKit
+
 
 struct ClipboardWindowView: View {
     @EnvironmentObject var clipboardManager: ClipboardManager
     @State private var currentIndex = 0
+    @State private var eventMonitor: Any?
+    @State private var frontmostApplication: NSRunningApplication?
 
     var body: some View {
         VStack {
@@ -22,25 +24,40 @@ struct ClipboardWindowView: View {
             }
         }
         .onAppear {
-            print("View appeared")
-            print(clipboardManager.clipboardItems.count)
             loadCurrentIndex()
             setupKeyHandlers()
+            
+            // Store application over which window was opened
+            // in order to pass focus back to it after window is closed
+            self.frontmostApplication = NSWorkspace.shared.frontmostApplication
+
+            // Ensure the current app is activated when the window opens
+            NSApp.activate(ignoringOtherApps: true)
         }
         .onDisappear {
             saveCurrentIndex()
-            clipboardManager.copyItemToClipboard(index: currentIndex)
+            removeKeyHandlers()
+
+            NSApp.activate(ignoringOtherApps: false)
+
+            if let previousApp = self.frontmostApplication {
+                previousApp.activate(options: .activateAllWindows)
+            }
         }
-        .onChange(of: clipboardManager.clipboardItems) { newItems in
-            print("Clipboard items changed: \(newItems)")
-            currentIndex = 0
+    }
+    
+    private func centerWindow(_ window: NSWindow) {
+        if let screenVisibleFrame = NSScreen.main?.visibleFrame {
+            let xPos = (screenVisibleFrame.width - window.frame.width) / 2 + screenVisibleFrame.origin.x
+            let yPos = (screenVisibleFrame.height - window.frame.height) / 2 + screenVisibleFrame.origin.y
+            window.setFrame(NSRect(x: xPos, y: yPos, width: window.frame.width, height: window.frame.height), display: true)
         }
     }
 
     private var currentItemView: some View {
         Group {
-            if currentIndex < clipboardManager.clipboardItems.count {
                 let currentItem = clipboardManager.clipboardItems[currentIndex]
+                
                 VStack {
                     switch currentItem.availableType(from: [.string, .tiff, .fileURL]) {
                     case .string:
@@ -76,18 +93,12 @@ struct ClipboardWindowView: View {
                                 .padding(.top)
                         }
                     default:
-                        Text("Unknown item")
+                        Text("Unknown item \(currentItem.types) \(currentItem.data(forType: .string))")
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                             .padding(.horizontal)
                             .padding(.top)
                     }
                 }
-            } else {
-                Text("Invalid index")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .padding(.horizontal)
-                    .padding(.top)
-            }
         }
     }
 
@@ -123,30 +134,32 @@ struct ClipboardWindowView: View {
     }
 
     private func setupKeyHandlers() {
-        NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            guard let window = NSApp.mainWindow?.windowController?.window,
-                  NSApplication.shared.keyWindow === window else {
-                return event
-            }
+            eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+                // Ignore repeated key events
+                guard !event.isARepeat else {
+                    return nil
+                }
 
-            guard !event.isARepeat else {
-                return nil // Ignore repeated key events
-            }
-
-            switch event.keyCode {
-            case 123: // Left arrow key
-                currentIndex = max(0, currentIndex - 1)
-                print("Left arrow key pressed")
-                return nil // Consume the event
-            case 124: // Right arrow key
-                currentIndex = min(clipboardManager.clipboardItems.count - 1, currentIndex + 1)
-                print("Right arrow key pressed")
-                return nil // Consume the event
-            default:
-                return event
+                switch event.keyCode {
+                case 123: // Left arrow key
+                    currentIndex = max(0, currentIndex - 1)
+                    return event
+                case 124: // Right arrow key
+                    currentIndex = min(clipboardManager.clipboardItems.count - 1, currentIndex + 1)
+                    return event
+                default:
+                    return event
+                }
             }
         }
+    
+    private func removeKeyHandlers() {
+        if let monitor = eventMonitor {
+            NSEvent.removeMonitor(monitor)
+            eventMonitor = nil
+        }
     }
+
 
     private func saveCurrentIndex() {
         UserDefaults.standard.set(currentIndex, forKey: "currentIndexKey")
@@ -159,7 +172,6 @@ struct ClipboardWindowView: View {
             currentIndex = 0
         }
 
-        // Ensure currentIndex is within bounds
         if currentIndex < 0 || currentIndex >= clipboardManager.clipboardItems.count {
             currentIndex = 0
         }
