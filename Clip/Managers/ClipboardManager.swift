@@ -28,76 +28,59 @@ class ClipboardManager: ObservableObject {
             self?.checkClipboard()
         }
     }
+    
+    private func deepCopyItem(item: NSPasteboardItem) -> NSPasteboardItem {
+        let newItem = NSPasteboardItem()
+        for type in item.types {
+            if let data = item.data(forType: type) {
+                newItem.setData(data, forType: type)
+            }
+        }
+        return newItem
+    }
 
     func checkClipboard() {
         guard pasteboard.changeCount != lastChangeCount else {
             return
         }
         
-        
         DispatchQueue.main.async {
             if let items = self.pasteboard.pasteboardItems {
                 for item in items {
-                    if !self.clipboardItems.contains(where: { $0.string(forType: .string) == item.string(forType: .string) }) {
-                        if self.clipboardItems.count >= 20 {
+                    // Check if item already exists in clipboardItems
+                    if !self.clipboardItems.contains(where: { existingItem in
+                        // Compare based on string representation for simplicity
+                        existingItem.string(forType: .string) == item.string(forType: .string)
+                    }) {
+                        if self.clipboardItems.count >= MAX_ITEM_COUNT {
                             self.clipboardItems.removeFirst()
                         }
-                        let newItem = item
-                        self.clipboardItems.append(newItem) // Create a copy to avoid reuse issues
-                        self.objectWillChange.send()
-                        print(self.clipboardItems.count)
+                        
+                        let newItem = self.deepCopyItem(item: item)
+                        
+                        self.clipboardItems.append(newItem)
                         self.lastChangeCount = self.pasteboard.changeCount
-
                     }
                 }
             }
         }
     }
 
+
     func copyItemToClipboard(index: Int) {
-        guard index >= 0 && index < clipboardItems.count else {
-            return
-        }
-
-        let item = clipboardItems[index]
-        let newItem = NSPasteboardItem()
-
-        // Copy data for each type in the item
-        item.types.forEach { type in
-            switch type {
-            case .string:
-                if let string = item.string(forType: .string) {
-                    newItem.setString(string, forType: .string)
-                }
-            case .tiff:
-                if let tiffData = item.data(forType: .tiff) {
-                    newItem.setData(tiffData, forType: .tiff)
-                }
-            case .fileURL:
-                if let fileURLString = item.string(forType: .fileURL),
-                   let fileURL = URL(string: fileURLString) {
-                    newItem.setString(fileURL.absoluteString, forType: .fileURL)
-                }
-            default:
-                if let data = item.data(forType: type) {
-                    newItem.setData(data, forType: type)
-                } else if let string = item.string(forType: type) {
-                    newItem.setString(string, forType: type)
-                } else {
-                    print("Unhandled type: \(type.rawValue)")
-                }
-            }
-        }
+        guard index >= 0 && index < clipboardItems.count else { return }
 
         pasteboard.clearContents()
+        
+        let item = clipboardItems[index]
+        
+        let newItem = self.deepCopyItem(item: item)
+        
+        // Write the new item to the pasteboard
         pasteboard.writeObjects([newItem])
     }
 
-
-
-
     deinit {
         timer?.invalidate()
-        print("ClipboardManager deinitialized")
     }
 }

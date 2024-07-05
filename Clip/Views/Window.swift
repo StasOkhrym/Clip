@@ -6,6 +6,14 @@
 //
 import SwiftUI
 
+let SUPPORTED_TYPE: [NSPasteboard.PasteboardType] = [
+    .string,
+    .png,
+    .tiff,
+    .fileURL,
+    .URL,
+    .fileContents
+]
 
 struct ClipboardWindowView: View {
     @EnvironmentObject var clipboardManager: ClipboardManager
@@ -37,7 +45,9 @@ struct ClipboardWindowView: View {
         .onDisappear {
             saveCurrentIndex()
             removeKeyHandlers()
-
+            
+            clipboardManager.copyItemToClipboard(index: currentIndex)
+            
             NSApp.activate(ignoringOtherApps: false)
 
             if let previousApp = self.frontmostApplication {
@@ -56,50 +66,30 @@ struct ClipboardWindowView: View {
 
     private var currentItemView: some View {
         Group {
-                let currentItem = clipboardManager.clipboardItems[currentIndex]
-                
-                VStack {
-                    switch currentItem.availableType(from: [.string, .tiff, .fileURL]) {
-                    case .string:
-                        if let text = currentItem.string(forType: .string) {
-                            Text(text)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                                .padding(.horizontal)
-                                .padding(.top)
-                        } else {
-                            Text("Invalid text data")
-                        }
-                    case .tiff:
-                        if let imageData = currentItem.data(forType: .tiff),
-                           let nsImage = NSImage(data: imageData) {
-                            Image(nsImage: nsImage)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        } else {
-                            Text("Invalid image data")
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                                .padding(.horizontal)
-                                .padding(.top)
-                        }
-                    case .fileURL:
-                        if let fileURLString = currentItem.string(forType: .fileURL),
-                           let fileURL = URL(string: fileURLString) {
-                            handleFileURL(fileURL)
-                        } else {
-                            Text("Invalid file URL")
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                                .padding(.horizontal)
-                                .padding(.top)
-                        }
-                    default:
-                        Text("Unknown item \(currentItem.types) \(currentItem.data(forType: .string))")
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                            .padding(.horizontal)
-                            .padding(.top)
-                    }
-                }
+            let currentItem = clipboardManager.clipboardItems[currentIndex]
+            
+            VStack {
+                 if let view = createView(for: currentItem) {
+                     view
+                 } else {
+                     Text("Unsupported content")
+                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                         .padding(.horizontal)
+                         .padding(.top)
+                 }
+             }
+             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+             .padding(.horizontal)
+             .padding(.top)
+         }
+    }
+    
+    
+    private func createView(for item: NSPasteboardItem) -> AnyView? {
+        if let text = item.string(forType: .string) {
+            return AnyView(Text(text))
         }
+        return nil
     }
 
     private var statusView: some View {
@@ -108,50 +98,41 @@ struct ClipboardWindowView: View {
                 .padding(.bottom, 5)
         }
     }
-
-    private func handleFileURL(_ fileURL: URL) -> some View {
-        let fileExtension = fileURL.pathExtension.lowercased()
-        if fileExtension == "jpg" || fileExtension == "png" || fileExtension == "gif" {
-            if let nsImage = NSImage(contentsOf: fileURL) {
-                return AnyView(
-                    Image(nsImage: nsImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                )
-            }
-        } else if fileExtension == "txt" {
-            if let text = try? String(contentsOf: fileURL, encoding: .utf8) {
-                return AnyView(
-                    Text(text)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                        .padding(.horizontal)
-                        .padding(.top)
-                )
-            }
-        }
-        return AnyView(Text("Unsupported file type"))
+    
+    private func playAlertSound() {
+        NSSound.beep()
     }
 
     private func setupKeyHandlers() {
-            eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-                // Ignore repeated key events
-                guard !event.isARepeat else {
-                    return nil
-                }
+        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            // Ignore repeated key events
+            guard !event.isARepeat else {
+                return nil
+            }
 
-                switch event.keyCode {
-                case 123: // Left arrow key
+            switch event.keyCode {
+            case 123: // Left arrow key
+                if currentIndex > 0 {
                     currentIndex = max(0, currentIndex - 1)
-                    return event
-                case 124: // Right arrow key
-                    currentIndex = min(clipboardManager.clipboardItems.count - 1, currentIndex + 1)
-                    return event
-                default:
-                    return event
+                } else {
+                    // Indicate that you are at the last item
+                    playAlertSound()
                 }
+                return nil
+            case 124: // Right arrow key
+                if currentIndex < clipboardManager.clipboardItems.count - 1 {
+                    currentIndex = min(clipboardManager.clipboardItems.count - 1, currentIndex + 1)
+                } else {
+                    // Indicate that you are at the last item
+                    playAlertSound()
+                }
+                return nil
+            default:
+                return event
             }
         }
+    }
+
     
     private func removeKeyHandlers() {
         if let monitor = eventMonitor {
