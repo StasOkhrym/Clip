@@ -30,8 +30,8 @@
             filePath = "Clip/Views/Window.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "66"
-            endingLineNumber = "66"
+            startingLineNumber = "59"
+            endingLineNumber = "59"
             landmarkName = "ClipboardWindowView"
             landmarkType = "14">
          </BreakpointContent>

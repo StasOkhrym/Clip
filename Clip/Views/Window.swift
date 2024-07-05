@@ -6,14 +6,7 @@
 //
 import SwiftUI
 
-let SUPPORTED_TYPE: [NSPasteboard.PasteboardType] = [
-    .string,
-    .png,
-    .tiff,
-    .fileURL,
-    .URL,
-    .fileContents
-]
+
 
 struct ClipboardWindowView: View {
     @EnvironmentObject var clipboardManager: ClipboardManager
@@ -85,10 +78,34 @@ struct ClipboardWindowView: View {
     }
     
     
-    private func createView(for item: NSPasteboardItem) -> AnyView? {        
+    private func createView(for item: NSPasteboardItem) -> AnyView? {
+        // Filepaths are trated as strings so check them first
+        if let fileURLString = item.string(forType: .fileURL) {
+            // Decode the URL string
+            let decodedURLString = fileURLString.removingPercentEncoding ?? fileURLString
+            if let fileURL = URL(string: decodedURLString) {
+                return previewForFileURL(fileURL)
+            }
+        }
+
         // Check for string content
         if let text = item.string(forType: .string) {
-            return AnyView(Text(text))
+            return AnyView(
+                VStack{
+                    Text("Text in the buffer")
+                        .font(.headline)
+                        .padding()
+                        .background(Color.gray.opacity(0.3))
+                        .cornerRadius(8)
+                        .padding(.bottom, 10)
+                        .cornerRadius(8)
+                    
+                    Text(text)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .padding(.horizontal)
+                        .padding(.top)
+                }
+            )
         }
         
         // Check for image data (PNG or JPEG)
@@ -101,10 +118,7 @@ struct ClipboardWindowView: View {
                 )
             }
         }
-        if let fileURLString = item.string(forType: .fileURL), let fileURL = URL(string: fileURLString) {
-            print("this is a file")
-            return previewForFileURL(fileURL)
-        }
+
         return nil
     }
     
@@ -118,22 +132,63 @@ struct ClipboardWindowView: View {
         // Handle different file types
         if let nsImage = NSImage(contentsOf: fileURL) {
             return AnyView(
-                Image(nsImage: nsImage)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
+                VStack{
+                    Text("File: \(fileURL.relativePath)")                  
+                        .font(.headline)
+                        .padding()
+                        .background(Color.gray.opacity(0.3))
+                        .cornerRadius(8)
+                        .padding(.bottom, 10)
+                        .cornerRadius(8)
+                    HStack{
+                        Spacer()
+                        Image(nsImage: nsImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .padding(.horizontal)
+                        Spacer()
+                    }
+                    
+                }
             )
-        } else if fileURL.pathExtension.lowercased() == "txt", let text = try? String(contentsOf: fileURL, encoding: .utf8) {
+        } 
+        else if let text = try? String(contentsOf: fileURL, encoding: .utf8) {
+            // Any text file encoded UTF-8 will have a preview
             return AnyView(
-                Text(text)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .padding(.horizontal)
-                    .padding(.top)
+                VStack {
+                    Text("File: \(fileURL.relativePath)")
+                        .font(.headline)
+                        .padding()
+                        .background(Color.gray.opacity(0.3))
+                        .cornerRadius(8)
+                        .padding(.bottom, 10)
+                        .cornerRadius(8)
+                    Text(text)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .padding(.horizontal)
+                        .padding(.top)
+                }
             )
         }
-        
-        // Add more cases for other file types as needed
-        
-        return nil
+        else {
+            // Consider this as a binary files or other extensions which may be in WIP
+            return AnyView(
+                VStack {
+                    Text("FIle in the buffer")
+                        .font(.headline)
+                        .padding()
+                        .background(Color.gray.opacity(0.3))
+                        .cornerRadius(8)
+                        .padding(.bottom, 10)
+                        .cornerRadius(8)
+                    Text(fileURL.relativePath)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .padding(.horizontal)
+                        .padding(.top)
+                    
+                }
+            )
+        }
     }
 
 
