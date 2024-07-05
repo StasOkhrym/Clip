@@ -7,16 +7,26 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            Text("Hello, world!")
-                .padding();
-            Button(
-                action: {
-                    NSApplication.shared.terminate(nil)
+            Text("Clip is minimalistic clipoard manager")
+                .padding(.top);
+            VStack{
+                Text("To open the window, press ⌘ + ⇧ + V")
+                HStack{
+                    Text("Navigate through buffer with")
+                    Image(systemName: "arrow.left")
+                    Image(systemName: "arrow.right")
                 }
-            ) {
-            Text("Quit")
             }
-        }
+            HStack{
+                Button(
+                    action: {
+                        NSApplication.shared.terminate(nil)
+                    }
+                ) {
+                    Text("Close app")
+                }
+            }.padding(.bottom)
+        }.padding(.horizontal)
     }
 }
 
