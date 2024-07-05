@@ -10,6 +10,7 @@ struct ContentView: View {
             Text("Clip is minimalistic clipoard manager")
                 .padding(.top)
                 .font(.title3)
+            
             VStack{
                 Text("To open the window, press ⌘ + ⇧ + V")
                 HStack{
@@ -18,6 +19,7 @@ struct ContentView: View {
                     Image(systemName: "arrow.right")
                 }
             }.padding(.bottom, 5)
+            
             HStack{
                 Button(
                     action: {
@@ -27,6 +29,7 @@ struct ContentView: View {
                     Text("Close app")
                 }
             }.padding(.bottom)
+            
         }.padding(.horizontal)
     }
 }

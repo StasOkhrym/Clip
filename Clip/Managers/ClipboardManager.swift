@@ -31,6 +31,7 @@ class ClipboardManager: ObservableObject {
     
     private func deepCopyItem(item: NSPasteboardItem) -> NSPasteboardItem {
         let newItem = NSPasteboardItem()
+        
         for type in item.types {
             if let data = item.data(forType: type) {
                 newItem.setData(data, forType: type)
@@ -48,10 +49,13 @@ class ClipboardManager: ObservableObject {
             if let items = self.pasteboard.pasteboardItems {
                 for item in items {
                     // Check if item already exists in clipboardItems
-                    if !self.clipboardItems.contains(where: { existingItem in
+                    if !self.clipboardItems.contains(
                         // Compare based on string representation for simplicity
-                        existingItem.string(forType: .string) == item.string(forType: .string)
-                    }) {
+                        where: {
+                            existingItem in 
+                            existingItem.string(forType: .string) == item.string(forType: .string)
+                        }
+                    ){
                         if self.clipboardItems.count >= MAX_ITEM_COUNT {
                             self.clipboardItems.removeFirst()
                         }

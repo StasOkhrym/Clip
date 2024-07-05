@@ -10,7 +10,7 @@ import AppKit
 
 
 // To avoid
-// Warning: -[NSWindow makeKeyWindow] called on NSWindow 0x10b704620 which returned NO from -[NSWindow canBecomeKeyWindow].
+// Warning: -[NSWindow makeKeyWindow] called on NSWindow <address> which returned NO from -[NSWindow canBecomeKeyWindow].
 class NSWindowModified: NSWindow {
     override var canBecomeKey: Bool {
         return true
@@ -31,10 +31,13 @@ class MyWindowManager: NSObject, ObservableObject, NSWindowDelegate {
             let windowSize = NSSize(width: 800, height: 600)
 
             window = NSWindowModified(contentRect: NSRect(origin: .zero, size: windowSize),
-                                     styleMask: [],
-                                     backing: .buffered,
-                                     defer: false)
-            window?.backgroundColor = NSColor(red: 0, green: 0, blue: 0, alpha: 0.7)
+                                      styleMask: [],
+                                      backing: .buffered,
+                                      defer: false)
+            window?.backgroundColor = NSColor(red: 0,
+                                              green: 0,
+                                              blue: 0,
+                                              alpha: 0.7)
             window?.center()
 
             window?.contentView = NSHostingView(rootView: ClipboardWindowView().environmentObject(clipboardManager))

@@ -85,12 +85,57 @@ struct ClipboardWindowView: View {
     }
     
     
-    private func createView(for item: NSPasteboardItem) -> AnyView? {
+    private func createView(for item: NSPasteboardItem) -> AnyView? {        
+        // Check for string content
         if let text = item.string(forType: .string) {
             return AnyView(Text(text))
         }
+        
+        // Check for image data (PNG or JPEG)
+        if item.types.contains(.png) || item.types.contains(.tiff) || item.types.contains(.pdf) {
+            if let imageData = item.data(forType: .png) ?? item.data(forType: .tiff) ?? item.data(forType: .pdf), let nsImage = NSImage(data: imageData) {
+                return AnyView(
+                    Image(nsImage: nsImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                )
+            }
+        }
+        if let fileURLString = item.string(forType: .fileURL), let fileURL = URL(string: fileURLString) {
+            print("this is a file")
+            return previewForFileURL(fileURL)
+        }
         return nil
     }
+    
+    private func previewForFileURL(_ fileURL: URL) -> AnyView? {
+        let fileManager = FileManager.default
+        
+        guard fileManager.fileExists(atPath: fileURL.path) else {
+            return nil
+        }
+        
+        // Handle different file types
+        if let nsImage = NSImage(contentsOf: fileURL) {
+            return AnyView(
+                Image(nsImage: nsImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            )
+        } else if fileURL.pathExtension.lowercased() == "txt", let text = try? String(contentsOf: fileURL, encoding: .utf8) {
+            return AnyView(
+                Text(text)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(.horizontal)
+                    .padding(.top)
+            )
+        }
+        
+        // Add more cases for other file types as needed
+        
+        return nil
+    }
+
 
     private var statusView: some View {
         HStack {
