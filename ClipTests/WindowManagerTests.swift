@@ -1,9 +1,3 @@
-//
-//  ClipboardWindowView.swift
-//  ClipTests
-//
-//  Created by Станіслав Охрим on 06.07.2024.
-//
 import XCTest
 @testable import Clip // Replace with your module name
 

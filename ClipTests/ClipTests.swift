@@ -1,10 +1,3 @@
-//
-//  ClipTests.swift
-//  ClipTests
-//
-//  Created by Станіслав Охрим on 06.07.2024.
-//
-
 import XCTest
 
 final class ClipTests: XCTestCase {

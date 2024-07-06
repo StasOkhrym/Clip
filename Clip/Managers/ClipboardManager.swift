@@ -1,9 +1,3 @@
-//
-//  ClipboardManager.swift
-//  Clip
-//
-//  Created by Станіслав Охрим on 25.06.2024.
-//
 import SwiftUI
 import Combine
 import AppKit
