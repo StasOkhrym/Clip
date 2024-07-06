@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./Clip/Assets.xcassets/AppIcon.appiconset/AppIcon.png" alt="Clip Icon" width="200" style="border-radius: 20px;">
+  <img src="https://github.com/StasOkhrym/Clip/Assets.xcassets/AppIcon.appiconset/256-mac.png" alt="Clip Icon" width="200" style="border-radius: 20px;">
 </p>
 
 ### Clip is one more macOS clipboard manager.
