@@ -1,5 +1,5 @@
 import XCTest
-@testable import Clip // Replace with your module name
+@testable import Clip
 
 class WindowManagerTests: XCTestCase {
     
