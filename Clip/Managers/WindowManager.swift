@@ -17,7 +17,7 @@ class NSWindowModified: NSWindow {
     }
 }
 
-class MyWindowManager: NSObject, ObservableObject, NSWindowDelegate {
+class WindowManager: NSObject, ObservableObject, NSWindowDelegate {
     @Published private var window: NSWindowModified?
     private var clipboardManager: ClipboardManager
 
@@ -59,6 +59,10 @@ class MyWindowManager: NSObject, ObservableObject, NSWindowDelegate {
 
     func windowWillClose(_ notification: Notification) {
         window = nil
+    }
+    
+    func getWindow() -> NSWindow? {
+        return self.window
     }
 
 }
