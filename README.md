@@ -28,9 +28,19 @@ To install **Clip**, follow these steps:
     ```
 3. Build and run the project using Xcode.
 
-Alternatively, you can download the latest version from the releases tab.
+Alternatively, you can download the latest version from the [releases tab](https://github.com/StasOkhrym/Clip/releases).
 
+### Important Note
 
+Since this app is not signed with a paid Apple Developer Program certificate, you'll need to bypass macOS security warnings to run it. Follow these steps on the first launch:
+
+1. Download the app from the releases tab.
+2. Open Finder and navigate to the App.
+3. Right-click (or control-click) the **Clip** app and select "Open".
+4. When prompted with a security warning, click "Open" again to confirm.
+5. Move app into Applications in Finder.
+
+This will allow you to run the app without further security warnings.
 ## Usage
 
 #### Opening the Clipboard Window
