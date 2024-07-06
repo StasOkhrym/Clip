@@ -1,8 +1,10 @@
 <p align="center">
-  <img src="https://github.com/StasOkhrym/Clip/blob/main/Assets.xcassets/AppIcon.appiconset/256-mac.png" alt="Clip Icon" width="200" style="border-radius: 20px;">
+  <img src="https://github.com/StasOkhrym/Clip/blob/3349a880b5e01d5b48ec33d84aefc27f7a19a723/Clip/Assets.xcassets/AppIcon.appiconset/512-mac.png" alt="Clip Icon" width="200" style="border-radius: 20px;">
 </p>
 
-### Clip is one more macOS clipboard manager.
+<h2 align="center">
+  Clip is one more macOS clipboard manager.
+</h2> 
 
 ## Features
 
