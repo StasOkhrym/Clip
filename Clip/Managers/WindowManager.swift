@@ -27,13 +27,20 @@ class WindowManager: NSObject, ObservableObject, NSWindowDelegate {
                                       styleMask: [],
                                       backing: .buffered,
                                       defer: false)
-            window?.backgroundColor = NSColor(red: 0,
-                                              green: 0,
-                                              blue: 0,
-                                              alpha: 0.7)
+            
+            window?.backgroundColor = NSColor.clear
+            window?.isOpaque = false
+            window?.hasShadow = true
+            window?.level = .floating
             window?.center()
 
-            window?.contentView = NSHostingView(rootView: ClipboardWindowView().environmentObject(clipboardManager))
+            let hostingView = NSHostingView(rootView: ClipboardWindowView().environmentObject(clipboardManager))
+            hostingView.wantsLayer = true
+            hostingView.layer?.cornerRadius = 8
+            hostingView.layer?.masksToBounds = true
+            hostingView.layer?.backgroundColor = NSColor(red: 0, green: 0, blue: 0, alpha: 0.7).cgColor
+
+            window?.contentView = hostingView
             window?.delegate = self
             window?.makeKeyAndOrderFront(nil)
         } else {
@@ -41,7 +48,6 @@ class WindowManager: NSObject, ObservableObject, NSWindowDelegate {
             window?.makeKeyAndOrderFront(nil)
         }
     }
-
     func closeWindow() {
         guard let window = window else {
             return
