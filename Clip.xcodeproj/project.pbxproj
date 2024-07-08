@@ -17,6 +17,7 @@
 		F85B0EF02C398B3B00B70A63 /* ClipTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85B0EEF2C398B3B00B70A63 /* ClipTests.swift */; };
 		F85B0EF72C398B7500B70A63 /* ClipboardManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85B0EF62C398B7500B70A63 /* ClipboardManagerTests.swift */; };
 		F85B0EF92C398E6200B70A63 /* WindowManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85B0EF82C398E6200B70A63 /* WindowManagerTests.swift */; };
+		F8C1A5062C3BEA5600958AA2 /* ClipboardWindowViewContrloller.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C1A5052C3BEA5600958AA2 /* ClipboardWindowViewContrloller.swift */; };
 		F8C423F92C2AEF010090FFF7 /* ClipboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C423F82C2AEF010090FFF7 /* ClipboardManager.swift */; };
 		F8C423FF2C2AFFB30090FFF7 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C423FE2C2AFFB30090FFF7 /* WindowManager.swift */; };
 		F8C424012C2B39090090FFF7 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C424002C2B39090090FFF7 /* Constants.swift */; };
@@ -46,6 +47,7 @@
 		F85B0EEF2C398B3B00B70A63 /* ClipTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipTests.swift; sourceTree = "<group>"; };
 		F85B0EF62C398B7500B70A63 /* ClipboardManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardManagerTests.swift; sourceTree = "<group>"; };
 		F85B0EF82C398E6200B70A63 /* WindowManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManagerTests.swift; sourceTree = "<group>"; };
+		F8C1A5052C3BEA5600958AA2 /* ClipboardWindowViewContrloller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardWindowViewContrloller.swift; sourceTree = "<group>"; };
 		F8C423F82C2AEF010090FFF7 /* ClipboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardManager.swift; sourceTree = "<group>"; };
 		F8C423FE2C2AFFB30090FFF7 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		F8C424002C2B39090090FFF7 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -91,6 +93,7 @@
 		F8030A212C29B61600CAA47F /* Clip */ = {
 			isa = PBXGroup;
 			children = (
+				F8C1A5032C3BE9A800958AA2 /* ViewController */,
 				F8C423FD2C2AFF9A0090FFF7 /* Managers */,
 				F8C423FC2C2AFF7C0090FFF7 /* Views */,
 				F8030A342C29C05F00CAA47F /* AppDelegate.swift */,
@@ -120,6 +123,14 @@
 				F85B0EF82C398E6200B70A63 /* WindowManagerTests.swift */,
 			);
 			path = ClipTests;
+			sourceTree = "<group>";
+		};
+		F8C1A5032C3BE9A800958AA2 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				F8C1A5052C3BEA5600958AA2 /* ClipboardWindowViewContrloller.swift */,
+			);
+			path = ViewController;
 			sourceTree = "<group>";
 		};
 		F8C423FC2C2AFF7C0090FFF7 /* Views */ = {
@@ -249,6 +260,7 @@
 			files = (
 				F8C423F92C2AEF010090FFF7 /* ClipboardManager.swift in Sources */,
 				F8030A352C29C05F00CAA47F /* AppDelegate.swift in Sources */,
+				F8C1A5062C3BEA5600958AA2 /* ClipboardWindowViewContrloller.swift in Sources */,
 				F8C423FF2C2AFFB30090FFF7 /* WindowManager.swift in Sources */,
 				F8030A252C29B61600CAA47F /* ContentView.swift in Sources */,
 				F8030A232C29B61600CAA47F /* ClipApp.swift in Sources */,

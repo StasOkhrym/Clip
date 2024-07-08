@@ -8,7 +8,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "697F2048-2FA6-4E49-94BE-8A3756D6BA52"
-            shouldBeEnabled = "No"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Clip/ClipApp.swift"
@@ -18,22 +18,64 @@
             endingLineNumber = "4"
             landmarkName = "ClipApp"
             landmarkType = "14">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "9F60ED6B-2AA4-4963-B26D-490D17356C8B"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "Clip/Views/Window.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "53"
-            endingLineNumber = "53"
-            landmarkName = "ClipboardWindowView"
-            landmarkType = "14">
+            <Locations>
+               <Location
+                  uuid = "697F2048-2FA6-4E49-94BE-8A3756D6BA52 - 765c0e6729427f32"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "protocol witness for SwiftUI.App.init() -&gt; &#x3c4;_0_0 in conformance Clip.ClipApp : SwiftUI.App in Clip"
+                  moduleName = "Clip"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/s.okhrym/personal_code/Clip/Clip/ClipApp.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "5"
+                  endingLineNumber = "5">
+               </Location>
+               <Location
+                  uuid = "697F2048-2FA6-4E49-94BE-8A3756D6BA52 - 56e6c2883088e7c9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Clip.ClipApp.init() -&gt; Clip.ClipApp"
+                  moduleName = "Clip"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/s.okhrym/personal_code/Clip/Clip/ClipApp.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "5"
+                  endingLineNumber = "5">
+               </Location>
+               <Location
+                  uuid = "697F2048-2FA6-4E49-94BE-8A3756D6BA52 - de60163718565a46"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "Clip.ClipApp.init(appDelegate: SwiftUI.NSApplicationDelegateAdaptor&lt;Clip.AppDelegate&gt;) -&gt; Clip.ClipApp"
+                  moduleName = "Clip"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/s.okhrym/personal_code/Clip/Clip/ClipApp.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "0"
+                  endingLineNumber = "0">
+               </Location>
+               <Location
+                  uuid = "697F2048-2FA6-4E49-94BE-8A3756D6BA52 - 2651b031fee40264"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "main"
+                  moduleName = "Clip"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/s.okhrym/personal_code/Clip/Clip/ClipApp.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "4"
+                  endingLineNumber = "4">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

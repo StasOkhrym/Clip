@@ -10,12 +10,15 @@ class NSWindowModified: NSWindow {
     }
 }
 
+
 class WindowManager: NSObject, ObservableObject, NSWindowDelegate {
     @Published private var window: NSWindowModified?
     private var clipboardManager: ClipboardManager
+    private var controller: ClipboardWindowController
 
     init(clipboardManager: ClipboardManager) {
         self.clipboardManager = clipboardManager
+        self.controller = ClipboardWindowController(clipboardManager: clipboardManager)
         super.init()
     }
 
@@ -34,7 +37,7 @@ class WindowManager: NSObject, ObservableObject, NSWindowDelegate {
             window?.level = .floating
             window?.center()
 
-            let hostingView = NSHostingView(rootView: ClipboardWindowView().environmentObject(clipboardManager))
+            let hostingView = NSHostingView(rootView: ClipboardWindowView(controller: controller).environmentObject(clipboardManager))
             hostingView.wantsLayer = true
             hostingView.layer?.cornerRadius = 8
             hostingView.layer?.masksToBounds = true
@@ -48,6 +51,7 @@ class WindowManager: NSObject, ObservableObject, NSWindowDelegate {
             window?.makeKeyAndOrderFront(nil)
         }
     }
+    
     func closeWindow() {
         guard let window = window else {
             return
@@ -63,5 +67,4 @@ class WindowManager: NSObject, ObservableObject, NSWindowDelegate {
     func getWindow() -> NSWindow? {
         return self.window
     }
-
 }

@@ -1,7 +1,6 @@
 import SwiftUI
 
 
-
 struct ContentView: View {
     @State private var currentIndex = 0
     

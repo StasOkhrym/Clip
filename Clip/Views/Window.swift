@@ -1,12 +1,14 @@
 import SwiftUI
 
 
-
 struct ClipboardWindowView: View {
+    @ObservedObject private var controller: ClipboardWindowController
+
     @EnvironmentObject var clipboardManager: ClipboardManager
-    @State private var currentIndex = 0
-    @State private var eventMonitor: Any?
-    @State private var frontmostApplication: NSRunningApplication?
+
+    internal init(controller: ClipboardWindowController) {
+        self.controller = controller
+    }
 
     var body: some View {
         VStack {
@@ -19,27 +21,20 @@ struct ClipboardWindowView: View {
             }
         }
         .onAppear {
-            loadCurrentIndex()
-            setupKeyHandlers()
-            
-            // Store application over which window was opened
-            // in order to pass focus back to it after window is closed
-            self.frontmostApplication = NSWorkspace.shared.frontmostApplication
+            controller.loadCurrentIndex()
+            controller.setupKeyHandlers()
+            controller.storeFrontmostApplication()
 
             // Ensure the current app is activated when the window opens
             NSApp.activate(ignoringOtherApps: true)
         }
         .onDisappear {
-            saveCurrentIndex()
-            removeKeyHandlers()
-            
-            clipboardManager.copyItemToClipboard(index: currentIndex)
-            
-            NSApp.activate(ignoringOtherApps: false)
+            controller.saveCurrentIndex()
+            controller.cleanup()
+            clipboardManager.copyItemToClipboard(index: controller.currentIndex)
 
-            if let previousApp = self.frontmostApplication {
-                previousApp.activate(options: .activateAllWindows)
-            }
+            // Restore focus to the previous frontmost application
+            controller.activateCurrentApp()
         }
     }
     
@@ -53,7 +48,7 @@ struct ClipboardWindowView: View {
 
     private var currentItemView: some View {
         Group {
-            let currentItem = clipboardManager.clipboardItems[currentIndex]
+            let currentItem = clipboardManager.clipboardItems[controller.currentIndex]
             
             VStack {
                  if let view = createView(for: currentItem) {
@@ -70,7 +65,6 @@ struct ClipboardWindowView: View {
              .padding(.top)
          }
     }
-    
     
     private func createView(for item: NSPasteboardItem) -> AnyView? {
         // Filepaths are trated as strings so check them first
@@ -188,67 +182,8 @@ struct ClipboardWindowView: View {
 
     private var statusView: some View {
         HStack {
-            Text("Item \(currentIndex + 1) of \(clipboardManager.clipboardItems.count)")
+            Text("Item \(controller.currentIndex + 1) of \(clipboardManager.clipboardItems.count)")
                 .padding(.bottom, 5)
-        }
-    }
-    
-    private func playAlertSound() {
-        NSSound.beep()
-    }
-
-    private func setupKeyHandlers() {
-        eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
-            // Ignore repeated key events
-            guard !event.isARepeat else {
-                return nil
-            }
-
-            switch event.keyCode {
-            case 123: // Left arrow key
-                if currentIndex > 0 {
-                    currentIndex = max(0, currentIndex - 1)
-                } else {
-                    // Indicate that you are at the last item
-                    playAlertSound()
-                }
-                return nil
-            case 124: // Right arrow key
-                if currentIndex < clipboardManager.clipboardItems.count - 1 {
-                    currentIndex = min(clipboardManager.clipboardItems.count - 1, currentIndex + 1)
-                } else {
-                    // Indicate that you are at the last item
-                    playAlertSound()
-                }
-                return nil
-            default:
-                return event
-            }
-        }
-    }
-
-    
-    private func removeKeyHandlers() {
-        if let monitor = eventMonitor {
-            NSEvent.removeMonitor(monitor)
-            eventMonitor = nil
-        }
-    }
-
-
-    private func saveCurrentIndex() {
-        UserDefaults.standard.set(currentIndex, forKey: "currentIndexKey")
-    }
-
-    private func loadCurrentIndex() {
-        if let savedIndex = UserDefaults.standard.object(forKey: "currentIndexKey") as? Int {
-            currentIndex = savedIndex
-        } else {
-            currentIndex = 0
-        }
-
-        if currentIndex < 0 || currentIndex >= clipboardManager.clipboardItems.count {
-            currentIndex = 0
         }
     }
 }
