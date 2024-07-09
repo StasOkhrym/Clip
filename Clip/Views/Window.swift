@@ -2,9 +2,7 @@ import SwiftUI
 
 
 struct ClipboardWindowView: View {
-    @ObservedObject private var controller: ClipboardWindowController
-
-    @EnvironmentObject var clipboardManager: ClipboardManager
+    @ObservedObject var controller: ClipboardWindowController
 
     internal init(controller: ClipboardWindowController) {
         self.controller = controller
@@ -12,7 +10,7 @@ struct ClipboardWindowView: View {
 
     var body: some View {
         VStack {
-            if !clipboardManager.clipboardItems.isEmpty {
+            if !controller.clipboardManager.clipboardItems.isEmpty {
                 currentItemView
                 statusView
             } else {
@@ -31,7 +29,7 @@ struct ClipboardWindowView: View {
         .onDisappear {
             controller.saveCurrentIndex()
             controller.cleanup()
-            clipboardManager.copyItemToClipboard(index: controller.currentIndex)
+            controller.clipboardManager.copyItemToClipboard(index: controller.currentIndex)
 
             // Restore focus to the previous frontmost application
             controller.activateCurrentApp()
@@ -48,7 +46,7 @@ struct ClipboardWindowView: View {
 
     private var currentItemView: some View {
         Group {
-            let currentItem = clipboardManager.clipboardItems[controller.currentIndex]
+            let currentItem = controller.clipboardManager.clipboardItems[controller.currentIndex]
             
             VStack {
                  if let view = createView(for: currentItem) {
@@ -140,7 +138,8 @@ struct ClipboardWindowView: View {
                 }
             )
         } 
-        else if let text = try? String(contentsOf: fileURL, encoding: .utf8) {
+        else if let text = controller.cacheManager.getText(fileURL: fileURL) {
+            print(text)
             // Any text file encoded UTF-8 will have a preview
             return AnyView(
                 VStack {
@@ -182,7 +181,7 @@ struct ClipboardWindowView: View {
 
     private var statusView: some View {
         HStack {
-            Text("Item \(controller.currentIndex + 1) of \(clipboardManager.clipboardItems.count)")
+            Text("Item \(controller.currentIndex + 1) of \(controller.clipboardManager.clipboardItems.count)")
                 .padding(.bottom, 5)
         }
     }

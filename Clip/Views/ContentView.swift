@@ -3,6 +3,9 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var currentIndex = 0
+    @EnvironmentObject var clipboardManager: ClipboardManager
+    @EnvironmentObject var cacheManager: CacheManager
+    
     
     var body: some View {
         VStack {

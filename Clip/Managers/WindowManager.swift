@@ -14,10 +14,12 @@ class NSWindowModified: NSWindow {
 class WindowManager: NSObject, ObservableObject, NSWindowDelegate {
     @Published private var window: NSWindowModified?
     private var clipboardManager: ClipboardManager
+    private var cacheManager: CacheManager
     private var controller: ClipboardWindowController?
 
-    init(clipboardManager: ClipboardManager) {
+    init(clipboardManager: ClipboardManager, cacheManager: CacheManager) {
         self.clipboardManager = clipboardManager
+        self.cacheManager = cacheManager
         super.init()
     }
 
@@ -37,9 +39,9 @@ class WindowManager: NSObject, ObservableObject, NSWindowDelegate {
             window?.center()
 
             // Initialize controller only when opening window
-            controller = ClipboardWindowController(clipboardManager: clipboardManager)
+            controller = ClipboardWindowController(clipboardManager: clipboardManager, cacheManager: cacheManager)
 
-            let hostingView = NSHostingView(rootView: ClipboardWindowView(controller: controller!).environmentObject(clipboardManager))
+            let hostingView = NSHostingView(rootView: ClipboardWindowView(controller: controller!).environmentObject(clipboardManager).environmentObject(cacheManager))
             hostingView.wantsLayer = true
             hostingView.layer?.cornerRadius = 8
             hostingView.layer?.masksToBounds = true

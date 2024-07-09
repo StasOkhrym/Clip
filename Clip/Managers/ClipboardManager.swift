@@ -1,8 +1,4 @@
 import SwiftUI
-import Combine
-import AppKit
-
-
 
 
 class ClipboardManager: ObservableObject {
@@ -11,6 +7,10 @@ class ClipboardManager: ObservableObject {
     private var timer: Timer?
     private let pasteboard = NSPasteboard.general
     private var lastChangeCount: Int = 0
+    
+    static let newItemNotification = Notification.Name("ClipboardManagerNewItemAtIndex")
+    static let itemRemovedNotification = Notification.Name("ClipboardManagerItemRemovedAtIndex")
+
 
     init() {
         lastChangeCount = pasteboard.changeCount
@@ -51,6 +51,11 @@ class ClipboardManager: ObservableObject {
                         }
                     ){
                         if self.clipboardItems.count >= MAX_ITEM_COUNT {
+                            NotificationCenter.default.post(
+                                name: ClipboardManager.itemRemovedNotification,
+                                object: self,
+                                userInfo: ["item": self.clipboardItems[0]]
+                            )
                             self.clipboardItems.removeFirst()
                         }
                         
@@ -58,6 +63,13 @@ class ClipboardManager: ObservableObject {
                         
                         self.clipboardItems.append(newItem)
                         self.lastChangeCount = self.pasteboard.changeCount
+
+                        NotificationCenter.default.post(
+                            name: ClipboardManager.newItemNotification,
+                            object: self,
+                            userInfo: ["item": newItem]
+                            
+                        )
                     }
                 }
             }

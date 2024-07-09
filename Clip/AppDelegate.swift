@@ -9,10 +9,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     let hotKey = HotKey(key: .v, modifiers: [.command, .shift])
     private var windowManager: WindowManager!
+    private var clipboardManager: ClipboardManager!
+    private var cacheManager: CacheManager!
+
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         AppDelegate.instance = self
-        windowManager = WindowManager(clipboardManager: ClipboardManager())
+        
+        // Initialize managers
+        clipboardManager = ClipboardManager()
+        cacheManager = CacheManager()
+
+        // Initialize WindowManager with both managers
+        windowManager = WindowManager(clipboardManager: clipboardManager, cacheManager: cacheManager)
+        
         setupHotKey()
     }
     

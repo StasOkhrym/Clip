@@ -18,6 +18,7 @@
 		F85B0EF72C398B7500B70A63 /* ClipboardManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85B0EF62C398B7500B70A63 /* ClipboardManagerTests.swift */; };
 		F85B0EF92C398E6200B70A63 /* WindowManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F85B0EF82C398E6200B70A63 /* WindowManagerTests.swift */; };
 		F8C1A5062C3BEA5600958AA2 /* ClipboardWindowViewContrloller.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C1A5052C3BEA5600958AA2 /* ClipboardWindowViewContrloller.swift */; };
+		F8C1A5092C3DBDA700958AA2 /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C1A5082C3DBDA700958AA2 /* CacheManager.swift */; };
 		F8C423F92C2AEF010090FFF7 /* ClipboardManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C423F82C2AEF010090FFF7 /* ClipboardManager.swift */; };
 		F8C423FF2C2AFFB30090FFF7 /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C423FE2C2AFFB30090FFF7 /* WindowManager.swift */; };
 		F8C424012C2B39090090FFF7 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8C424002C2B39090090FFF7 /* Constants.swift */; };
@@ -48,6 +49,7 @@
 		F85B0EF62C398B7500B70A63 /* ClipboardManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardManagerTests.swift; sourceTree = "<group>"; };
 		F85B0EF82C398E6200B70A63 /* WindowManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManagerTests.swift; sourceTree = "<group>"; };
 		F8C1A5052C3BEA5600958AA2 /* ClipboardWindowViewContrloller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardWindowViewContrloller.swift; sourceTree = "<group>"; };
+		F8C1A5082C3DBDA700958AA2 /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		F8C423F82C2AEF010090FFF7 /* ClipboardManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClipboardManager.swift; sourceTree = "<group>"; };
 		F8C423FE2C2AFFB30090FFF7 /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		F8C424002C2B39090090FFF7 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 			children = (
 				F8C423F82C2AEF010090FFF7 /* ClipboardManager.swift */,
 				F8C423FE2C2AFFB30090FFF7 /* WindowManager.swift */,
+				F8C1A5082C3DBDA700958AA2 /* CacheManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -221,7 +224,6 @@
 			);
 			mainGroup = F8030A162C29B61600CAA47F;
 			packageReferences = (
-				F8030A382C29DB8700CAA47F /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */,
 				F8030A3B2C29E02B00CAA47F /* XCRemoteSwiftPackageReference "HotKey" */,
 			);
 			productRefGroup = F8030A202C29B61600CAA47F /* Products */;
@@ -259,6 +261,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F8C423F92C2AEF010090FFF7 /* ClipboardManager.swift in Sources */,
+				F8C1A5092C3DBDA700958AA2 /* CacheManager.swift in Sources */,
 				F8030A352C29C05F00CAA47F /* AppDelegate.swift in Sources */,
 				F8C1A5062C3BEA5600958AA2 /* ClipboardWindowViewContrloller.swift in Sources */,
 				F8C423FF2C2AFFB30090FFF7 /* WindowManager.swift in Sources */,
@@ -432,7 +435,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.Clip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -464,7 +467,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MARKETING_VERSION = 0.1.1;
+				MARKETING_VERSION = 0.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = me.Clip;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -539,14 +542,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		F8030A382C29DB8700CAA47F /* XCRemoteSwiftPackageReference "KeyboardShortcuts" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sindresorhus/KeyboardShortcuts";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.1;
-			};
-		};
 		F8030A3B2C29E02B00CAA47F /* XCRemoteSwiftPackageReference "HotKey" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/soffes/HotKey";
