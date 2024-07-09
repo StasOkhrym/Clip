@@ -68,8 +68,8 @@ struct ClipboardWindowView: View {
         // Filepaths are trated as strings so check them first
         if let fileURLString = item.string(forType: .fileURL) {
             // Decode the URL string
-            let decodedURLString = fileURLString.removingPercentEncoding ?? fileURLString
-            if let fileURL = URL(string: decodedURLString) {
+            //let decodedURLString = fileURLString.removingPercentEncoding ?? fileURLString
+            if let fileURL = URL(string: fileURLString) {
                 return previewForFileURL(fileURL)
             }
         }
