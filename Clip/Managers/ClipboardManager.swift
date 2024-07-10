@@ -69,10 +69,8 @@ class ClipboardManager: ObservableObject {
                     }
                 }
                 
-                // Update change count after processing all items
                 self.lastChangeCount = self.pasteboard.changeCount
                 
-                // Post notification for new items added
                 if !addedItems.isEmpty {
                     NotificationCenter.default.post(
                         name: ClipboardManager.newItemNotification,
