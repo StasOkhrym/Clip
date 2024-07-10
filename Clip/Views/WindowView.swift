@@ -19,6 +19,7 @@ struct ClipboardWindowView: View {
             }
         }
         .onAppear {
+            controller.clipboardManager.checkClipboard()
             controller.loadCurrentIndex()
             controller.setupKeyHandlers()
             controller.storeFrontmostApplication()
@@ -66,10 +67,28 @@ struct ClipboardWindowView: View {
     
     private func createView(for item: NSPasteboardItem) -> AnyView? {
         // Filepaths are trated as strings so check them first
-        if let fileURLString = item.string(forType: .fileURL) {
-            // Decode the URL string
-            //let decodedURLString = fileURLString.removingPercentEncoding ?? fileURLString
-            if let fileURL = URL(string: fileURLString) {
+        if let fileURLString = item.string(forType: .fileURL),
+           let fileURL = URL(string: fileURLString) {
+            
+            if fileURL.hasDirectoryPath {
+                return AnyView(
+                    VStack {
+                        Text("Directory in the buffer")
+                            .font(.headline)
+                            .padding()
+                            .background(Color.gray.opacity(0.3))
+                            .cornerRadius(8)
+                            .padding(.bottom, 10)
+                            .cornerRadius(8)
+                        
+                        Text(fileURLString)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                            .padding(.horizontal)
+                            .padding(.top)
+                    }
+                )
+            } else {
+                // Handle regular file URL
                 return previewForFileURL(fileURL)
             }
         }

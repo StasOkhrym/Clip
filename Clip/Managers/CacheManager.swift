@@ -28,11 +28,7 @@ class CacheManager: ObservableObject {
         if let fileURLString = newItem.string(forType: .fileURL),
            let fileURL = URL(string: fileURLString.removingPercentEncoding ?? fileURLString) {
             removeCachedText(for: fileURL)
-            
-            let text = readFile(fileURL: fileURL)
-            if let text = text {
-                cachedText[fileURL] = text
-            }
+            loadCachedText(for: fileURL)
         }
     }
 
@@ -45,26 +41,23 @@ class CacheManager: ObservableObject {
         }
     }
 
-    func readFile(fileURL: URL) -> String? {
-        if let cachedText = cachedText[fileURL] {
-            return cachedText
-        }
-
-        guard let fileHandle = try? FileHandle(forReadingFrom: fileURL) else {
-            return nil
-        }
-
-        defer {
-            try? fileHandle.close()
-        }
-
-        let data = fileHandle.readData(ofLength: chunkSize)
-
-        if let chunk = String(data: data, encoding: .utf8) {
-            cachedText[fileURL] = chunk
-            return chunk
-        } else {
-            return nil
+    func loadCachedText(for fileURL: URL) {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let self = self else { return }
+            
+            if let fileHandle = try? FileHandle(forReadingFrom: fileURL) {
+                defer {
+                    try? fileHandle.close()
+                }
+                
+                let data = fileHandle.readData(ofLength: self.chunkSize)
+                
+                if let chunk = String(data: data, encoding: .utf8) {
+                    DispatchQueue.main.async {
+                        self.cachedText[fileURL] = chunk
+                    }
+                }
+            }
         }
     }
 
