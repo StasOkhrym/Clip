@@ -38,10 +38,13 @@ class WindowManager: NSObject, ObservableObject, NSWindowDelegate {
             window?.level = .floating
             window?.center()
 
-            // Initialize controller only when opening window
             controller = ClipboardWindowController(clipboardManager: clipboardManager, cacheManager: cacheManager)
 
-            let hostingView = NSHostingView(rootView: ClipboardWindowView(controller: controller!).environmentObject(clipboardManager).environmentObject(cacheManager))
+            let hostingView = NSHostingView(
+                rootView: ClipboardWindowView(controller: controller!)
+                            .environmentObject(clipboardManager)
+                            .environmentObject(cacheManager)
+            )
             hostingView.wantsLayer = true
             hostingView.layer?.cornerRadius = 8
             hostingView.layer?.masksToBounds = true

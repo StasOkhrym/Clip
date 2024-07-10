@@ -115,7 +115,6 @@ struct ClipboardWindowView: View {
             return nil
         }
         
-        // Handle different file types
         if let nsImage = NSImage(contentsOf: fileURL) {
             return AnyView(
                 VStack{
@@ -139,7 +138,6 @@ struct ClipboardWindowView: View {
             )
         } 
         else if let text = controller.cacheManager.getText(fileURL: fileURL) {
-            print(text)
             // Any text file encoded UTF-8 will have a preview
             return AnyView(
                 VStack {

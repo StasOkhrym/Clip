@@ -42,7 +42,6 @@ class ClipboardManager: ObservableObject {
         DispatchQueue.main.async {
             if let items = self.pasteboard.pasteboardItems {
                 for item in items {
-                    // Check if item already exists in clipboardItems
                     if !self.clipboardItems.contains(
                         // Compare based on string representation for simplicity
                         where: {
@@ -83,10 +82,8 @@ class ClipboardManager: ObservableObject {
         pasteboard.clearContents()
         
         let item = clipboardItems[index]
-        
         let newItem = self.deepCopyItem(item: item)
         
-        // Write the new item to the pasteboard
         pasteboard.writeObjects([newItem])
     }
 

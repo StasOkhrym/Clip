@@ -16,11 +16,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         AppDelegate.instance = self
         
-        // Initialize managers
         clipboardManager = ClipboardManager()
         cacheManager = CacheManager()
 
-        // Initialize WindowManager with both managers
         windowManager = WindowManager(clipboardManager: clipboardManager, cacheManager: cacheManager)
         
         setupHotKey()
