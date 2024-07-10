@@ -23,12 +23,14 @@ class CacheManager: ObservableObject {
     }
 
     @objc func handleNewItemNotification(_ notification: Notification) {
-        guard let newItem = notification.userInfo?["item"] as? NSPasteboardItem else { return }
-
-        if let fileURLString = newItem.string(forType: .fileURL),
-           let fileURL = URL(string: fileURLString.removingPercentEncoding ?? fileURLString) {
-            removeCachedText(for: fileURL)
-            loadCachedText(for: fileURL)
+        guard let newItems = notification.userInfo?["items"] as? [NSPasteboardItem] else { return }
+        
+        for newItem in newItems {
+            if let fileURLString = newItem.string(forType: .fileURL),
+               let fileURL = URL(string: fileURLString.removingPercentEncoding ?? fileURLString) {
+                removeCachedText(for: fileURL)
+                loadCachedText(for: fileURL)
+            }
         }
     }
 

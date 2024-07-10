@@ -20,7 +20,7 @@ struct ClipboardWindowView: View {
         }
         .onAppear {
             controller.clipboardManager.checkClipboard()
-            controller.loadCurrentIndex()
+            // controller.loadCurrentIndex()
             controller.setupKeyHandlers()
             controller.storeFrontmostApplication()
 
@@ -28,7 +28,7 @@ struct ClipboardWindowView: View {
             NSApp.activate(ignoringOtherApps: true)
         }
         .onDisappear {
-            controller.saveCurrentIndex()
+            // controller.saveCurrentIndex()
             controller.cleanup()
             controller.clipboardManager.copyItemToClipboard(index: controller.currentIndex)
 
@@ -101,7 +101,7 @@ struct ClipboardWindowView: View {
                         .font(.headline)
                         .padding()
                         .background(Color.gray.opacity(0.3))
-                        .cornerRadius(8)
+                        .cornerRadius(8)2
                         .padding(.bottom, 10)
                         .cornerRadius(8)
                     

@@ -41,14 +41,19 @@ class ClipboardManager: ObservableObject {
         
         DispatchQueue.main.async {
             if let items = self.pasteboard.pasteboardItems {
+                var addedItems: [NSPasteboardItem] = []
+                
                 for item in items {
-                    if !self.clipboardItems.contains(
-                        // Compare based on string representation for simplicity
-                        where: {
-                            existingItem in 
+                    if let existingIndex = self.clipboardItems.firstIndex(
+                        where: { existingItem in
                             existingItem.string(forType: .string) == item.string(forType: .string)
                         }
-                    ){
+                    ) {
+                        // Item already exists, move it to the top
+                        let existingItem = self.clipboardItems.remove(at: existingIndex)
+                        self.clipboardItems.insert(existingItem, at: 0)
+                    } else {
+                        // Item does not exist, add it to the top
                         if self.clipboardItems.count >= MAX_ITEM_COUNT {
                             NotificationCenter.default.post(
                                 name: ClipboardManager.itemRemovedNotification,
@@ -59,21 +64,26 @@ class ClipboardManager: ObservableObject {
                         }
                         
                         let newItem = self.deepCopyItem(item: item)
-                        
                         self.clipboardItems.insert(newItem, at: 0)
-                        self.lastChangeCount = self.pasteboard.changeCount
-
-                        NotificationCenter.default.post(
-                            name: ClipboardManager.newItemNotification,
-                            object: self,
-                            userInfo: ["item": newItem]
-                            
-                        )
+                        addedItems.append(newItem)
                     }
+                }
+                
+                // Update change count after processing all items
+                self.lastChangeCount = self.pasteboard.changeCount
+                
+                // Post notification for new items added
+                if !addedItems.isEmpty {
+                    NotificationCenter.default.post(
+                        name: ClipboardManager.newItemNotification,
+                        object: self,
+                        userInfo: ["items": addedItems]
+                    )
                 }
             }
         }
     }
+
 
 
     func copyItemToClipboard(index: Int) {
