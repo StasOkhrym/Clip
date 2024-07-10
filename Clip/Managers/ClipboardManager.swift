@@ -55,12 +55,12 @@ class ClipboardManager: ObservableObject {
                                 object: self,
                                 userInfo: ["item": self.clipboardItems[0]]
                             )
-                            self.clipboardItems.removeFirst()
+                            self.clipboardItems.removeLast()
                         }
                         
                         let newItem = self.deepCopyItem(item: item)
                         
-                        self.clipboardItems.append(newItem)
+                        self.clipboardItems.insert(newItem, at: 0)
                         self.lastChangeCount = self.pasteboard.changeCount
 
                         NotificationCenter.default.post(
